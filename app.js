@@ -2,18 +2,31 @@ const bells = new Audio('./sounds/bell.wav');
 const startBtn = document.querySelector('.btn-start');
 const stopBtn = document.querySelector('.btn-stop');
 const restartBtn = document.querySelector('.btn-restart');
+const timeSelect = document.querySelector('#time-select'); // Fixed selector to use ID
 const session = document.querySelector(".minutes");
 const secondsDiv = document.querySelector('.seconds');
 
 let myInterval;
 let isRunning = false;
 let totalSeconds;
-let originalSessionAmount = Number.parseInt(session.textContent); // Store original session time
 
-totalSeconds = originalSessionAmount * 60;
+const setTimer = (minutes) => {
+    totalSeconds = minutes * 60;
+    session.textContent = minutes;
+    secondsDiv.textContent = '00';
+}
+
+// Initialize the timer with the selected value
+setTimer(Number(timeSelect.value));
+
+timeSelect.addEventListener('change', () => {
+    if(!isRunning){
+        setTimer(Number(timeSelect.value));
+    }
+}) 
 
 const appTimer = () => {
-    if (!isRunning) {
+    if (!isRunning && totalSeconds > 0) {
         isRunning = true;
 
         myInterval = setInterval(() => {
@@ -32,10 +45,8 @@ const appTimer = () => {
 
             totalSeconds--; 
         }, 1000);
-
     } 
 };
-
 
 const stopTimer = () => {
     clearInterval(myInterval);
@@ -45,13 +56,9 @@ const stopTimer = () => {
 const restartTimer = () => {
     clearInterval(myInterval);
     isRunning = false;
-    totalSeconds = originalSessionAmount * 60;
-
-    session.textContent = originalSessionAmount;
-    secondsDiv.textContent = '00';
+    setTimer(Number(timeSelect.value));
 };
 
 startBtn.addEventListener('click', appTimer);
 stopBtn.addEventListener('click', stopTimer);
-restartBtn.addEventListener('click', restartTimer);
-
+restartBtn.addEventListener('click', restartTimer)
